@@ -11,6 +11,7 @@ public class Question{
   private Date createDate;
   private Date updateDate;
 
+
   List<Option> optionList;
 
   public Integer getId(){
@@ -38,6 +39,7 @@ public class Question{
     this.updateDate=value;
   }
 
+    @OneToMany(type = Option.class, name = "optionList")
     public List<Option> getOptionList() {
         return optionList;
     }

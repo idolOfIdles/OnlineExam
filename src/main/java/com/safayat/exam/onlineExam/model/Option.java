@@ -1,10 +1,22 @@
 package com.safayat.exam.onlineExam.model;
 
+import safayat.orm.annotation.Table;
+
+@Table(name = "online_exam.option")
 public class Option{
   private Integer id;
   private Integer question_id;
   private String description;
-  public Integer getId(){
+
+    public Option(Integer question_id, String description) {
+        this.question_id = question_id;
+        this.description = description;
+    }
+
+    public Option() {
+    }
+
+    public Integer getId(){
     return id;
   }
   public void setId(Integer value){
