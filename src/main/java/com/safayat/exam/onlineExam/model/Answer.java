@@ -1,18 +1,23 @@
 package com.safayat.exam.onlineExam.model;
 
 public class Answer{
-  private Integer id;
-  private Integer optionId;
-  public Integer getId(){
-    return id;
-  }
-  public void setId(Integer value){
-    this.id=value;
-  }
-  public Integer getOptionId(){
-    return optionId;
-  }
-  public void setOptionId(Integer value){
-    this.optionId=value;
-  }
+
+    private Integer qt_id;
+    private Integer op_id;
+
+    public Integer getQt_id() {
+        return qt_id;
+    }
+
+    public void setQt_id(Integer qt_id) {
+        this.qt_id = qt_id;
+    }
+
+    public Integer getOp_id() {
+        return op_id;
+    }
+
+    public void setOp_id(Integer op_id) {
+        this.op_id = op_id;
+    }
 }

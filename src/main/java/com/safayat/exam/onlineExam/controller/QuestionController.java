@@ -1,6 +1,7 @@
 package com.safayat.exam.onlineExam.controller;
 
 import com.safayat.exam.onlineExam.dao.QuestionDAO;
+import com.safayat.exam.onlineExam.model.Answer;
 import com.safayat.exam.onlineExam.model.Option;
 import com.safayat.exam.onlineExam.model.Question;
 import com.sun.tools.internal.ws.processor.model.Response;
@@ -52,7 +53,7 @@ public class QuestionController {
         if(!prefix.isEmpty()){
 
             return mysqlTable
-                    .filter("question like",prefix + "%")
+                    .filter("question like", prefix + "%")
                     .limit(limit, offset)
                     .toList(Question.class);
         }
@@ -118,6 +119,32 @@ public class QuestionController {
                 .on("qt.id", "op.question_id")
                 .filter("qt.id =", question_id)
                 .toList(Question.class);
+    }
+
+    @RequestMapping("/answer/{question_id}")
+    public List<Option> getAnswersByQuestionId(@PathVariable Integer question_id){
+
+        return MysqlQuery
+                .All()
+                .table(Option.class, "op")
+                .join(Answer.class, "an")
+                .on("an.op_id", "op.id")
+                .filter("an.qt_id =", question_id)
+                .toList(Option.class);
+    }
+
+    @RequestMapping(path = "/answer/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity saveOrUpdateAnswer(@RequestBody Answer answer){
+
+
+
+        try {
+            Crud.insert(answer);
+            return ResponseEntity.ok("Success");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
 
