@@ -4,7 +4,6 @@ import com.safayat.exam.onlineExam.dao.QuestionDAO;
 import com.safayat.exam.onlineExam.model.Answer;
 import com.safayat.exam.onlineExam.model.Option;
 import com.safayat.exam.onlineExam.model.Question;
-import com.sun.tools.internal.ws.processor.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,7 +38,8 @@ public class QuestionController {
     QuestionDAO questionDAO;
 
 
-    @RequestMapping("/all")
+
+    @RequestMapping(path = "/all", method = RequestMethod.GET)
     public List<Question> getQuestions(
             @RequestParam(required = false, defaultValue = "") String prefix
             , @RequestParam(required = false, defaultValue = "100") int limit
@@ -65,7 +65,7 @@ public class QuestionController {
     }
 
 
-    @RequestMapping(value = "/add", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(path = "/add", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> createOrUpdate(@RequestBody Question question){
         try {
             question.setCreateDate(new Date());
@@ -79,7 +79,7 @@ public class QuestionController {
 
     }
 
-    @RequestMapping(value = "/option/add", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(path = "/option/add", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> createOrUpdateOption(@RequestBody Option option){
         try {
             Crud.insert(option);
@@ -91,7 +91,7 @@ public class QuestionController {
 
     }
 
-    @RequestMapping("/add/options/{question_id}")
+    @RequestMapping(path = "/add/options/{question_id}" ,method = RequestMethod.POST)
     public ResponseEntity<Object> getQuestionsWithOptions(@RequestBody String[] descriptions
             , @PathVariable Integer question_id){
 
@@ -109,7 +109,7 @@ public class QuestionController {
         }
     }
 
-    @RequestMapping("/{question_id}")
+    @RequestMapping(path = "/{question_id}",method = RequestMethod.GET)
     public List<Question> getQuestionsWithOptions(@PathVariable Integer question_id){
 
         return MysqlQuery
@@ -121,7 +121,7 @@ public class QuestionController {
                 .toList(Question.class);
     }
 
-    @RequestMapping("/answer/{question_id}")
+    @RequestMapping(path = "/answer/{question_id}", method = RequestMethod.GET)
     public List<Option> getAnswersByQuestionId(@PathVariable Integer question_id){
 
         return MysqlQuery
