@@ -12,8 +12,12 @@ import org.springframework.web.bind.annotation.*;
 import safayat.orm.config.ConfigManager;
 import safayat.orm.crud.Crud;
 import safayat.orm.dao.GeneralRepository;
+import safayat.orm.dao.GeneralRepositoryManager;
+import safayat.orm.interfaces.LimitInterface;
+import safayat.orm.query.MysqlCondition;
 import safayat.orm.query.MysqlQuery;
 import safayat.orm.query.MysqlTable;
+import safayat.orm.query.QueryDataConverter;
 import safayat.orm.reflect.Util;
 
 import java.lang.reflect.Array;
@@ -70,7 +74,7 @@ public class QuestionController {
         try {
             question.setCreateDate(new Date());
             question.setUpdateDate(new Date());
-            Crud.insert(question);
+            Crud.save(question);
             return ResponseEntity.ok(question.getId());
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,23 +119,50 @@ public class QuestionController {
         return MysqlQuery
                 .fields("*")
                 .table(Question.class, "qt")
-                .join(Option.class, "op")
+                .join("online_exam.option", "op")
                 .on("qt.id", "op.question_id")
                 .filter("qt.id =", question_id)
                 .toList(Question.class);
     }
 
-    @RequestMapping(path = "/answer/{question_id}", method = RequestMethod.GET)
-    public List<Option> getAnswersByQuestionId(@PathVariable Integer question_id){
+    @RequestMapping(path = "/answer/{question_id}",method = RequestMethod.GET)
+    public List<Question> getQuestionsWithAnswers(@PathVariable Integer question_id){
 
         return MysqlQuery
-                .All()
-                .table(Option.class, "op")
-                .join(Answer.class, "an")
-                .on("an.op_id", "op.id")
-                .filter("an.qt_id =", question_id)
-                .toList(Option.class);
+                .fields("*")
+                .table(Question.class, "qt")
+                .join("online_exam.option", "op")
+                .on("qt.id", "op.question_id")
+                .join(Answer.class, "aw")
+                .on("qt.id", "aw.qt_id")
+                .filter("qt.id =", question_id)
+                .toList(Question.class);
     }
+
+    @RequestMapping(path = "/answer/search",method = RequestMethod.GET)
+    public List<Question> searchQuestionsWithAnswers(
+            @RequestParam( required = false) Integer question_id
+            , @RequestParam String prefix
+            , @RequestParam( required = false) Integer limit
+                                                     ){
+
+        return MysqlQuery
+                .fields("*")
+                .table(Question.class, "qt")
+                .join("online_exam.option", "op")
+                .on("qt.id", "op.question_id")
+                .join(Answer.class, "aw")
+                .on("op.id", "aw.op_id")
+                .filter("qt.id =", question_id, question_id != null)
+                .filter("qt.question like",prefix + "%", !prefix.trim().isEmpty())
+                .limit(limit, limit != null)
+                .toList(Question.class);
+
+
+
+
+    }
+
 
     @RequestMapping(path = "/answer/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity saveOrUpdateAnswer(@RequestBody Answer answer){
@@ -140,6 +171,22 @@ public class QuestionController {
 
         try {
             Crud.insert(answer);
+            return ResponseEntity.ok("Success");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @RequestMapping(path = "/truncate/{table}", method = RequestMethod.GET)
+    public ResponseEntity truncateTable(@PathVariable String table){
+
+
+
+        try {
+            GeneralRepositoryManager
+                    .getInstance().getGeneralRepository()
+                    .execute("truncate table " + ConfigManager.getInstance().getDbName() + "." + table);
             return ResponseEntity.ok("Success");
         } catch (Exception e) {
             e.printStackTrace();

@@ -2,7 +2,7 @@ package com.safayat.exam.onlineExam.model;
 
 import safayat.orm.annotation.Table;
 
-@Table(name = "online_exam.option")
+@Table(name = "option")
 public class Option{
   private Integer id;
   private Integer question_id;

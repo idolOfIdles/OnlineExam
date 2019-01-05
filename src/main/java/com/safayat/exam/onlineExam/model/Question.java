@@ -12,7 +12,17 @@ public class Question{
   private Date updateDate;
 
 
-  List<Option> optionList;
+    @OneToMany(type = Option.class
+            , name = "answerList"
+            , nativeColumnName = "id"
+            , matchingColumnName = "question_id")
+    List<Option> answerList;
+
+    @OneToMany(type = Option.class
+            , name = "optionList"
+            , nativeColumnName = "id"
+            , matchingColumnName = "question_id")
+    List<Option> optionList;
 
   public Integer getId(){
     return id;
@@ -39,13 +49,19 @@ public class Question{
     this.updateDate=value;
   }
 
-    @OneToMany(type = Option.class, name = "optionList")
     public List<Option> getOptionList() {
         return optionList;
     }
 
-    @OneToMany(type = Option.class, name = "optionList")
     public void setOptionList(List<Option> optionList) {
         this.optionList = optionList;
+    }
+
+    public List<Option> getAnswerList() {
+        return answerList;
+    }
+
+    public void setAnswerList(List<Option> answerList) {
+        this.answerList = answerList;
     }
 }
